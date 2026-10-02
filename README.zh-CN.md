@@ -166,3 +166,23 @@ uv run laya-mlx convert \
 目前证据不支持相同检查点下普遍再快 10 倍。部分场景的逐轮配对中位加速约为 1.03–1.08 倍；误差区间、量化保真结果和自定义 Metal 核的实测详见工程报告。
 
 这是独立的 MLX 移植，模型能力及其限制来自上游；模型输出概率不等于答案必然正确。采用 Apache-2.0，原作者与移植说明见 [NOTICE](NOTICE)。
+
+
+### v0.3.5 之后的上游修复
+
+已选择性移植上游 `4aa6761`（v0.3.23 源码树）的输入处理、语言路由及邮件清理修复；
+这不代表支持上游全部 API。神经网络架构的对照测试仍固定在 `573e5b6`。
+
+- 长对话列表截断时保留最新内容；字符串和字典保留开头。启用 prefix cache 时规则相同。
+- `noul` 的 criteria 只接受 `false` / `true`（支持 Python 布尔键）；
+  可用 `labels={"false": "no", "true": "yes"}` 改变显示词，结果仍是 P(true)。
+  错误的键现在会报错，不再静默丢弃。结构化 instructions 保留原始 Unicode。
+- 空 instructions、空 score level（`None`）和 `None` state 会报错，问题校验错误包含问题 ID。
+- 新增 `answer_confidence`，表示温度校准后的最大选项概率；旧 `confidence` 含义不变。
+  两者都不保证新任务上的准确率。
+- `usage` 新增 `state_tokens`、`state_tokens_dropped`（各问题中的最大丢弃量）、
+  `truncated` 和 `truncated_questions`。选项被截成相同 token 时，`usage.options`
+  报告对应问题的 `total`、`distinct`、`tokens_per_option`，不改变模型预测或选项顺序。
+- 增量 preload 保留已加载模型，`preload([])` 不加载任何模型；空语言提示回退到检测，
+  无法判定的拉丁文字遵循 Router 的 default，检测覆盖嵌套字符串和混合语言。
+- 邮件清理不再因正文中的 confidential、Thanks for the reply 或 From: 误删请求。

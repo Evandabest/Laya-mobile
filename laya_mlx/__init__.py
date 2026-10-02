@@ -14,7 +14,7 @@ from .presets import (
 from .router import DEFAULT_MODELS, RouteDecision, Router
 from .shortlist import embed_fn_from_agent, predict_shortlist, shortlist_choice
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = [
     "Agent",
     "RLAgent",

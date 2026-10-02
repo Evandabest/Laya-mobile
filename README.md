@@ -206,6 +206,33 @@ uv run laya-mlx predict \
   --questions examples/questions.json
 ```
 
+
+### Selected upstream fixes after v0.3.5
+
+The runtime selectively incorporates input, routing and email fixes from upstream
+`4aa6761` (v0.3.23 source tree). This does not add the upstream batch, long-document,
+hooks or server APIs. Neural architecture parity remains tested against `573e5b6`.
+
+- Chronological conversation lists keep their newest tokens when the context fills;
+  strings and dictionaries keep their beginning. Prefix caching uses the same rule.
+- `noul` criteria accept only `false`/`true` keys (including Python boolean keys).
+  Optional `labels={"false": "no", "true": "yes"}` changes the words shown to the
+  model while the answer remains P(true). Invalid keys now raise instead of being ignored.
+- Non-string instructions preserve Unicode. Empty instructions, null score levels,
+  and a `None` state raise a caller error; question errors name the question.
+- Every answer adds `answer_confidence`, the maximum calibrated option probability.
+  Existing `confidence` retains its entropy-based meaning for choice/score and maximum
+  probability for noul. Neither field guarantees accuracy on a new task.
+- `usage` adds `state_tokens`, `state_tokens_dropped` (the largest drop across questions),
+  `truncated`, and `truncated_questions`. `usage.options` appears only for questions
+  whose option token spans collide, reporting `total`, `distinct`, and `tokens_per_option`.
+  This reports lost distinctions; it does not recover them or remove position bias.
+- Incremental `Router.preload()` preserves resident models; `preload([])` does nothing.
+  Blank or language-neutral hints fall through to detection, and undecided Latin text
+  respects `Router(default=...)`. Detection examines nested string values and mixed text.
+- Email cleaning preserves ordinary requests mentioning confidentiality, thanking the
+  recipient, or starting with `From:` while recognizing multilingual mail footers.
+
 ## Export an MLX checkpoint
 
 ```bash
@@ -265,3 +292,15 @@ The preparation script checks every exported tensor against its original FP16 so
 ## Attribution and license
 
 Apache-2.0; see [LICENSE](https://github.com/mizorewww/laya-mlx/blob/main/LICENSE) and [NOTICE](https://github.com/mizorewww/laya-mlx/blob/main/NOTICE). Laya and its pretrained weights are by Convai Innovations and upstream contributors. Prompt construction, output formatting, language routing, email utilities and presets are adapted from [NandhaKishorM/laya](https://github.com/NandhaKishorM/laya) at commit `573e5b62696ba441230cd6be71d593331b5d23af`. The neural architecture is reimplemented in MLX following Laya and Hugging Face ModernBERT.
+
+## Maintenance and releases
+
+This project follows upstream Laya's behavior through a native MLX implementation.
+Upstream-compatible fixes take priority over independent model variants, service APIs,
+and additional demos. This remains a selective port, not a claim of full upstream API parity.
+
+To release, update the version in `pyproject.toml`, `laya_mlx/__init__.py`, and `uv.lock`,
+then push a matching `vX.Y.Z` tag. GitHub Actions runs the macOS test suite, validates
+version consistency, builds and checks the wheel and source distribution, publishes
+them to PyPI using the repository's `PYPI_API_TOKEN` secret, and creates a GitHub release.
+A failed test or build prevents publishing.

@@ -104,6 +104,7 @@ def test_analyse_reports_the_same_keys_from_every_branch():
         "language_undecided",
         "diacritic_rate",
         "non_latin_fraction",
+        "mixed_segment",
     }
     for text in (
         "Please refund the duplicate charge",

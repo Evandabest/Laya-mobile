@@ -143,6 +143,38 @@ def match_typed_decisions_workflow(questions: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+_ENGLISH_SUBTAGS = ("en", "eng", "english")
+
+# Codes that are valid `$LANG` values but name no language, so they answer nothing about the
+# state. `C`, `POSIX` and `C.UTF-8` are what minimal images ship -- `C.UTF-8` is the default
+# `LANG` in the official Python image, which is where `laya-serve` runs -- and the ISO 639-2
+# special codes say the same thing in the standard's own vocabulary: `und` undetermined,
+# `zxx` no linguistic content, `mul` multiple languages. They abstain, which is what the blank
+# case below already does, rather than forcing the multilingual checkpoint on English text.
+_LANGUAGE_AGNOSTIC_CODES = ("c", "posix", "und", "zxx", "mul")
+
+
+def _english_from_code(value: Any) -> Optional[bool]:
+    """True/False for a language code, or None when the code identifies nothing.
+
+    Accepts the forms a caller is likely to have to hand: `"en"`, `"EN"`, `"en-US"`, the
+    POSIX `"en_US"` (which `$LANG` holds), and `"en_US.UTF-8"`. `None` here means "no usable
+    hint", which is what lets a language-identification model abstain -- and it is also what a
+    code that names no language returns, so `LANG=C` falls through to detection instead of
+    pinning every request to one checkpoint.
+    """
+    if value is None:
+        return None
+    code = str(value).strip().lower()
+    if not code:
+        return None
+    code = code.split(".", 1)[0]  # en_US.UTF-8 -> en_US
+    primary = code.replace("_", "-").split("-", 1)[0]  # en_US -> en
+    if not primary or primary in _LANGUAGE_AGNOSTIC_CODES:
+        return None
+    return primary in _ENGLISH_SUBTAGS
+
+
 class Router:
     """Lazily loads Laya checkpoints and sends each request to the right one.
 
@@ -256,9 +288,9 @@ class Router:
         server or a demo. `max_loaded` is raised to fit whatever is preloaded, otherwise
         the LRU would immediately evict what this just built.
         """
-        names = [normalise_name(n) for n in (names or list(self.models))]
+        names = [normalise_name(n) for n in (list(self.models) if names is None else names)]
         with self._lock:
-            self.max_loaded = max(self.max_loaded, len(names), len(self._agents))
+            self.max_loaded = max(self.max_loaded, len(set(names) | set(self._agents)))
             for n in names:
                 if n not in self._agents:  # an attached agent is already built
                     self.load(n)
@@ -323,18 +355,15 @@ class Router:
         if workflow and self.auto_task_detection:
             return RouteDecision(
                 model="typed-decisions",
-                repo=self.models["typed-decisions"],
+                repo=_repo_str(self.models["typed-decisions"]),
                 reason="question ids match the %r typed-decisions workflow" % workflow,
                 detection=None,
                 workflow=workflow,
             )
 
-        if lang is not None:
-            key = (
-                "english"
-                if str(lang).lower().split("-")[0] in ("en", "eng", "english")
-                else "multilingual"
-            )
+        resolved = _english_from_code(lang)
+        if resolved is not None:
+            key = "english" if resolved else "multilingual"
             return RouteDecision(
                 model=key,
                 repo=_repo_str(self.models[key]),
@@ -364,6 +393,9 @@ class Router:
                     "Latin script, language not identified but %.0f%% non-English letters; "
                     "not safe for the English checkpoint" % (100 * float(det["diacritic_rate"]))
                 )
+        elif det["language_undecided"]:
+            key = self.default
+            reason = "Latin language undecided; using default (%s)" % key
         else:
             key = "english"
             reason = "English Latin text"

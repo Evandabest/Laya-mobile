@@ -13,10 +13,14 @@ from .common import (
     QTYPES,
     TEMP_MAX,
     TEMP_MIN,
+    answer_confidence,
     build_sequence,
     clamp_temperature,
+    collapsed_options,
     confidence_from_probs,
     render_options,
+    resolve_noul_labels,
+    serialize_state,
     temp_bucket,
 )
 from .model import DecisionModel, EncoderConfig, sanitize_weights
@@ -134,7 +138,7 @@ class Agent:
         self.temperature_raw = self.cfg.get("temperature", [1.0, 1.0, 1.0])
         self.temperature_by_options_raw = self.cfg.get("temperature_by_options", {})
         if len(self.temperature_raw) != 3 or any(
-            not math.isfinite(float(t)) or float(t) <= 0
+            isinstance(t, bool) or not math.isfinite(float(t)) or float(t) <= 0
             for t in [*self.temperature_raw, *self.temperature_by_options_raw.values()]
         ):
             raise ValueError("Calibration temperatures must be finite and positive")
@@ -178,10 +182,19 @@ class Agent:
         if not isinstance(qdef, dict):
             raise ValueError("Each question must be a dictionary")
         kind = qdef.get("type")
-        if kind not in QTYPES:
+        if not isinstance(kind, str) or kind not in QTYPES:
             raise ValueError(f"Unknown question type {kind!r}; expected choice, score, or noul")
         if "instructions" not in qdef:
             raise ValueError("Question is missing instructions")
+        instructions = qdef["instructions"]
+        if instructions is None or (
+            isinstance(instructions, (str, dict, list)) and not instructions
+        ):
+            raise ValueError("instructions must not be empty or None")
+        if isinstance(instructions, str) and not instructions.strip():
+            raise ValueError("instructions must not be blank")
+        if not isinstance(instructions, (str, dict, list, int, float)):
+            raise ValueError("instructions must be JSON-serializable text or structured data")
         criteria = qdef.get("criteria")
         if kind == "choice":
             if isinstance(criteria, list):
@@ -197,28 +210,78 @@ class Agent:
         elif kind == "score":
             if not isinstance(criteria, list) or not criteria:
                 raise ValueError("Score criteria must be a nonempty list")
+            if any(level is None for level in criteria):
+                raise ValueError("Score criteria must not contain a null level")
         elif criteria is not None and not isinstance(criteria, dict):
             raise ValueError("Noul criteria must be a dictionary with false/true descriptions")
-        instructions = qdef["instructions"]
+        elif criteria is not None:
+            criteria = {str(k).lower(): v for k, v in criteria.items()}
+            if not set(criteria) <= {"false", "true"}:
+                raise ValueError(
+                    "Noul criteria must be keyed only 'false'/'true'; use labels to change display text"
+                )
+        if "labels" in qdef:
+            if kind != "noul":
+                raise ValueError("labels is only supported for noul questions")
+            resolve_noul_labels(qdef["labels"])
         if not isinstance(instructions, str):
-            instructions = json.dumps(instructions)
-        return {"t": kind, "ins": instructions, "crit": criteria}
+            instructions = json.dumps(instructions, ensure_ascii=False)
+        q = {"t": kind, "ins": instructions, "crit": criteria}
+        if "labels" in qdef:
+            q["labels"] = qdef["labels"]
+        return q
+
+    @staticmethod
+    def _question(qid, definition):
+        if (
+            qid is None
+            or not isinstance(qid, (str, int))
+            or (isinstance(qid, str) and not qid.strip())
+        ):
+            raise ValueError("Question id must be a nonempty string or integer")
+        try:
+            return Agent._to_internal(definition)
+        except (ValueError, TypeError) as error:
+            raise ValueError(f"Question {qid!r}: {error}") from error
 
     def prepare(self, state, questions):
-        """Construct upstream-compatible CPU inputs, useful for parity and profiling."""
-        if self._prefix_cache is not None:
-            return self._prefix_cache.prepare(self, state, questions)
+        """Construct CPU inputs and per-question token-budget diagnostics."""
+        if state is None:
+            raise ValueError("state must not be None")
         if not isinstance(questions, dict):
             raise ValueError("questions must be a dictionary keyed by question id")
+        if self._prefix_cache is not None:
+            return self._prefix_cache.prepare(self, state, questions)
+        if not questions:
+            return [], []
+        state_ids = self.tok(
+            serialize_state(state).replace(self.tok.mask_token, " "), add_special_tokens=False
+        )["input_ids"]
         items, internal = [], []
         for qid, definition in questions.items():
-            q = self._to_internal(definition)
-            ids, markers = build_sequence(
-                self.tok, state, q, self.cfg.get("max_len", 512), self.cfg.get("head_max_len", 192)
+            q = self._question(qid, definition)
+            ids, markers, stats, state_stats = build_sequence(
+                self.tok,
+                state,
+                q,
+                self.cfg.get("max_len", 512),
+                self.cfg.get("head_max_len", 192),
+                truncate_left=isinstance(state, list),
+                state_ids=state_ids,
+                return_stats=True,
+                return_truncation_stats=True,
             )
             if len(markers) != len(render_options(q)):
                 raise ValueError(f"Question {qid!r} has too many options for the token budget")
-            items.append({"ids": ids, "markers": markers, "qtype": QTYPES[q["t"]]})
+            items.append(
+                {
+                    "ids": ids,
+                    "markers": markers,
+                    "qtype": QTYPES[q["t"]],
+                    "options": stats,
+                    "state_stats": state_stats,
+                }
+            )
             internal.append(q)
         return items, internal
 
@@ -258,6 +321,7 @@ class Agent:
                 answer = {
                     "type": q["t"],
                     "confidence": round(confidence_from_probs(p, k), 4),
+                    "answer_confidence": round(answer_confidence(p, k), 4),
                     "action": {"act_probability": round(float(act[row, 0]), 4)},
                 }
                 if q["t"] == "choice":
@@ -278,10 +342,23 @@ class Agent:
                         confidence=round(max(float(p[1]), 1.0 - float(p[1])), 4),
                     )
                 answers[qid] = answer
+        stats = [item["state_stats"] for item in items]
+        dropped = max((s["state_tokens_dropped"] for s in stats), default=0)
+        usage = {
+            "input_tokens": sum(len(item["ids"]) for item in items),
+            "output_tokens": 0,
+            "state_tokens": stats[0]["state_tokens"] if stats else 0,
+            "state_tokens_dropped": dropped,
+            "truncated": dropped > 0,
+            "truncated_questions": [qid for qid, s in zip(question_ids, stats) if s["truncated"]],
+        }
+        collapsed = collapsed_options(question_ids, items)
+        if collapsed:
+            usage["options"] = collapsed
         return {
             "model": "laya-rl-agent",
             "answers": answers,
-            "usage": {"input_tokens": sum(len(item["ids"]) for item in items), "output_tokens": 0},
+            "usage": usage,
         }
 
     predict = system_one
