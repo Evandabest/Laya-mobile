@@ -21,7 +21,7 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 ## 3. Export backends
 
-- [ ] Add a conversion-time PyTorch wrapper with five inputs and two outputs.
+- [x] Add a conversion-time PyTorch wrapper with five inputs and two outputs.
 - [ ] Export the pinned English checkpoint directly to an FP16 Core ML ML Program.
 - [ ] Validate Core ML numerics and decisions against fixtures on macOS.
 - [ ] Record unsupported or CPU-fallback operations and the minimum deployment target.

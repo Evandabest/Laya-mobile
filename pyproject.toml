@@ -29,6 +29,7 @@ dev = ["pytest>=8", "ruff>=0.12", "build>=1"]
 reference = ["torch>=2.14,<3", "transformers>=5.17,<6", "safetensors>=0.6"]
 benchmark = ["matplotlib>=3.10", "pyarrow>=18"]
 demo = ["rich>=15,<16", "Pillow>=12,<13"]
+conversion = ["coremltools>=9,<10; sys_platform == 'darwin' and python_version < '3.14'"]
 
 [project.scripts]
 laya-mlx = "laya_mlx.cli:main"
