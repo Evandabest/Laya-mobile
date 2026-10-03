@@ -15,9 +15,9 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 - [x] Define a versioned fixture schema.
 - [x] Add representative request cases covering every typed output and edge case.
-- [ ] Generate exact tokenizer and padded tensor inputs from the pinned reference.
-- [ ] Record raw logits, calibrated probabilities, decoded results, and file hashes.
-- [ ] Add schema and determinism tests.
+- [x] Generate exact tokenizer and padded tensor inputs from the pinned reference.
+- [x] Record raw logits, calibrated probabilities, decoded results, and file hashes.
+- [x] Add schema and determinism tests.
 
 ## 3. Export backends
 

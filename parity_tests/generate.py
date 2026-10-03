@@ -251,7 +251,9 @@ def main():
     parser.add_argument("--checkpoint", type=Path, default=Path("models/laya"))
     parser.add_argument("--device", choices=("cpu", "mps"), default="mps")
     parser.add_argument(
-        "--output", type=Path, default=Path("artifacts/parity/laya-ios-english-v1.json")
+        "--output",
+        type=Path,
+        default=Path("parity_tests/fixtures/laya-ios-english-v1.json"),
     )
     args = parser.parse_args()
     bundle = generate(args.upstream, args.checkpoint, args.device)

@@ -1,9 +1,13 @@
 import hashlib
+import json
+from pathlib import Path
 
 import pytest
 
 from parity_tests.cases import parity_cases
 from parity_tests.validate import MARKER_SLOTS, SEQUENCE_LENGTH, validate_bundle
+
+FIXTURE = Path(__file__).parents[1] / "parity_tests/fixtures/laya-ios-english-v1.json"
 
 
 def test_mobile_case_names_and_question_order_are_stable():
@@ -24,6 +28,16 @@ def test_case_definitions_are_fresh_copies():
     first, second = parity_cases(), parity_cases()
     first[0]["questions"]["department"]["criteria"]["new"] = "mutation"
     assert "new" not in second[0]["questions"]["department"]["criteria"]
+
+
+def test_checked_in_real_fixture_is_valid_and_matches_case_definitions():
+    bundle = validate_bundle(json.loads(FIXTURE.read_text()))
+    definitions = parity_cases()
+    assert len(bundle["cases"]) == 18
+    assert sum(len(case["rows"]) for case in bundle["cases"]) == 44
+    assert [(case["name"], case["state"], case["questions"]) for case in bundle["cases"]] == [
+        (case["name"], case["state"], case["questions"]) for case in definitions
+    ]
 
 
 def test_structural_fixture_validator_accepts_complete_bundle():
