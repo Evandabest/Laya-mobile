@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Evandabest/Laya-mobile/parity_tests/schema.json",
+  "title": "Laya portable parity fixture bundle",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile",
+    "generated_at",
+    "source",
+    "files",
+    "model_io",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profile": {"const": "laya-ios-english-v1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "source": {
+      "type": "object",
+      "required": ["upstream_commit", "checkpoint", "checkpoint_revision"],
+      "properties": {
+        "upstream_commit": {"type": "string", "minLength": 40, "maxLength": 40},
+        "checkpoint": {"type": "string"},
+        "checkpoint_revision": {"type": "string", "minLength": 40, "maxLength": 40}
+      },
+      "additionalProperties": true
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "model_io": {
+      "type": "object",
+      "required": ["batch_size", "sequence_length", "marker_slots", "probability_tolerance"],
+      "properties": {
+        "batch_size": {"const": 1},
+        "sequence_length": {"const": 512},
+        "marker_slots": {"const": 48},
+        "probability_tolerance": {"type": "number", "minimum": 0}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "state", "questions", "rows", "result"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "questions": {"type": "object", "minProperties": 1},
+          "rows": {"type": "array", "minItems": 1},
+          "result": {"type": "object"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

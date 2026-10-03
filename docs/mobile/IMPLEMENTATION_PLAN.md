@@ -9,12 +9,12 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [x] Document the inference pipeline and backend boundary.
 - [x] Pin the upstream implementation and English checkpoint revisions.
 - [x] Define fixed first-prototype tensor shapes and parity tolerances.
-- [ ] Add a machine-readable compatibility manifest schema.
+- [x] Add a machine-readable compatibility manifest schema.
 
 ## 2. Portable parity fixtures
 
-- [ ] Define a versioned fixture schema.
-- [ ] Add representative request cases covering every typed output and edge case.
+- [x] Define a versioned fixture schema.
+- [x] Add representative request cases covering every typed output and edge case.
 - [ ] Generate exact tokenizer and padded tensor inputs from the pinned reference.
 - [ ] Record raw logits, calibrated probabilities, decoded results, and file hashes.
 - [ ] Add schema and determinism tests.
@@ -62,4 +62,3 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [ ] Demonstrate all primary typed decisions in the iOS app.
 - [ ] Confirm no server or inference-time network dependency.
 - [ ] Document remaining limitations and the Android follow-up plan.
-
