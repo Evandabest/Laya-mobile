@@ -5,6 +5,10 @@
 2. Run `xcodegen generate` in this directory after changing `project.yml`.
 3. Open `LayaExample.xcodeproj`, select an iPhone target, and run.
 
-The screen accepts user text and exercises choice, score, and boolean decisions through the local
-`LayaMobile` Swift package. It displays confidence, inference latency, truncation, and the active
+The screen includes examples for plain text, ordered JSON objects, chronological conversations,
+Unicode, empty input, and truncation. It exercises choice, score, boolean/noul, custom boolean
+labels, and multiple questions in one request through the local `LayaMobile` Swift package.
+
+Each result shows the selected value, the complete option distribution, confidence,
+answer-confidence, action probability, inference latency, token usage, truncation, and the active
 Core ML backend. No inference-time network request is made.

@@ -2,12 +2,12 @@
 
 ## iOS limitations
 
-- Physical-device execution is pending because the development Mac is missing the iOS platform
-  component required by its Xcode build. The iPhone 17 Pro pass must record load, first/warm
-  inference, peak memory, sustained thermals, and Core ML compute-unit placement.
-- The public Swift prototype accepts text state. The reference implementation also accepts JSON
-  dictionaries and conversation lists; canonical serialization and left-truncation for those
-  inputs still need to be exposed through the Swift API.
+- Physical-device execution is pending. The iPhone 17 Pro pass must record load, first/warm
+  inference, peak memory, sustained thermals, and Core ML compute-unit placement; Simulator
+  execution does not answer those hardware questions.
+- The public Swift API accepts text, ordered JSON objects, and chronological conversation lists.
+  It serializes structured state with upstream-compatible JSON formatting and keeps the newest
+  conversation tokens when the context is truncated.
 - Choice and rubric criteria currently use string values. The reference accepts structured JSON
   criterion and instruction values, which require the same canonical renderer in Swift.
 - The first profile is fixed to batch 1, 512 sequence tokens, 48 marker slots, English, FP16, and

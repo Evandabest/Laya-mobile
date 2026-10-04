@@ -31,7 +31,8 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 - [x] Create the `LayaMobile` Swift package.
 - [x] Add strongly typed choice, score, boolean/noul, result, usage, and error types.
-- [ ] Port validation, serialization, rendering, truncation, and tensor construction.
+- [x] Port state validation, serialization, truncation, and tensor construction.
+- [ ] Add structured JSON values to criteria and instructions; strings are currently supported.
 - [x] Load the tokenizer entirely from bundled local assets.
 - [x] Prove exact tokenizer parity, including Unicode and adversarial whitespace.
 - [x] Load and invoke the compiled Core ML model.
@@ -42,8 +43,10 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 ## 5. Example application
 
 - [x] Create a minimal iOS application using the package.
-- [x] Support user text and sample choice, score, and boolean questions.
-- [x] Display decision, probability/confidence values, latency, truncation, and backend.
+- [x] Support text, JSON-object, and conversation inputs, including empty, Unicode, and long cases.
+- [x] Demonstrate choice, score, boolean/noul, custom labels, and multi-question requests.
+- [x] Display selected values, every option probability, confidence variants, action probability,
+  latency, token usage, truncation, and backend.
 - [x] Make offline execution evident and testable.
 
 ## 6. Physical-device validation
@@ -59,6 +62,6 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [x] Load a real pinned Laya checkpoint with no Python runtime.
 - [x] Match tokenizer inputs exactly.
 - [x] Match every fixture decision with acceptable confidence drift.
-- [ ] Demonstrate all primary typed decisions in the iOS app.
+- [x] Demonstrate all primary typed decisions in the iOS app.
 - [x] Confirm no server or inference-time network dependency.
 - [x] Document remaining limitations and the Android follow-up plan.
