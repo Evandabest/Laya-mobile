@@ -37,7 +37,7 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [x] Load and invoke the compiled Core ML model.
 - [x] Port calibration, decoding, confidence, and output formatting.
 - [x] Support multiple questions sequentially behind one `predict` call.
-- [ ] Pass fixture-driven XCTest parity tests.
+- [x] Pass fixture-driven XCTest parity tests.
 
 ## 5. Example application
 

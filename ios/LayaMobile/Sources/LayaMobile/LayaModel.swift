@@ -83,7 +83,7 @@ public final class LayaModel: @unchecked Sendable {
         )
     }
 
-    private func prediction(_ prepared: PreparedQuestion) throws -> (
+    func prediction(_ prepared: PreparedQuestion) throws -> (
         logits: [Double], actionLogits: [Double]
     ) {
         do {
