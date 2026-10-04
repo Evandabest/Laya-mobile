@@ -46,6 +46,10 @@ public final class LayaModel: @unchecked Sendable {
     }
 
     public func predict(text: String, questions: [LayaQuestion]) throws -> LayaPrediction {
+        try predict(state: .text(text), questions: questions)
+    }
+
+    public func predict(state: LayaState, questions: [LayaQuestion]) throws -> LayaPrediction {
         guard !questions.isEmpty else {
             throw LayaError.invalidQuestion("At least one question is required")
         }
@@ -56,7 +60,7 @@ public final class LayaModel: @unchecked Sendable {
         var stateTokens = 0
         var dropped = 0
         for question in questions {
-            let prepared = try preprocessor.prepare(text: text, question: question)
+            let prepared = try preprocessor.prepare(state: state, question: question)
             let outputs = try prediction(prepared)
             results.append(
                 try LayaDecoder.decode(

@@ -96,3 +96,46 @@ private func tokenizerURL() -> URL? {
         #expect(actual.questionType == Int32(try #require(row["qtype"] as? Int)))
     }
 }
+
+@Test func structuredStatePreprocessingMatchesUpstreamSemantics() async throws {
+    guard let folder = tokenizerURL() else { return }
+    let tokenizer = try await LayaTokenizer.load(from: folder)
+    let preprocessor = LayaPreprocessor(tokenizer: tokenizer)
+    let question = LayaQuestion.boolean(
+        .init(name: "refund", instructions: "Does the latest request ask for a refund?")
+    )
+    let object = LayaState.object([
+        .init("message", .string("I was charged twice.")),
+        .init("attempts", .integer(2)),
+    ])
+    let serializedObject = try object.serialized()
+    #expect(
+        try preprocessor.prepare(state: object, question: question).inputIDs
+            == preprocessor.prepare(text: serializedObject, question: question).inputIDs
+    )
+
+    let conversation = LayaState.conversation(
+        (0..<80).map { index in
+            .object([
+                .init("role", .string("user")),
+                .init("content", .string("turn \(index) with enough repeated context to overflow")),
+            ])
+        } + [
+            .object([
+                .init("role", .string("user")),
+                .init("content", .string("LATEST refund request")),
+            ]),
+        ]
+    )
+    let prepared = try preprocessor.prepare(state: conversation, question: question)
+    #expect(prepared.stateTokensDropped > 0)
+    let serializedConversation = try conversation.serialized()
+        .replacingOccurrences(of: "[MASK]", with: " ")
+    let expectedStateIDs = tokenizer.encode(serializedConversation)
+    let keptCount = prepared.stateTokens - prepared.stateTokensDropped
+    let attendedCount = prepared.attentionMask.reduce(0) { $0 + Int($1) }
+    let stateStart = attendedCount - keptCount - 1
+    let actualStateIDs = Array(prepared.inputIDs[stateStart..<(attendedCount - 1)]).map(Int.init)
+    #expect(actualStateIDs == Array(expectedStateIDs.suffix(keptCount)))
+    #expect(actualStateIDs != Array(expectedStateIDs.prefix(keptCount)))
+}

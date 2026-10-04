@@ -23,6 +23,10 @@ public struct LayaPreprocessor: Sendable {
     }
 
     public func prepare(text: String, question: LayaQuestion) throws -> PreparedQuestion {
+        try prepare(state: .text(text), question: question)
+    }
+
+    public func prepare(state: LayaState, question: LayaQuestion) throws -> PreparedQuestion {
         let rendered = try render(question)
         let instructions = rendered.instructions.replacingOccurrences(
             of: tokenizer.maskToken,
@@ -53,11 +57,14 @@ public struct LayaPreprocessor: Sendable {
         }
         ids.append(tokenizer.sepTokenID)
 
+        let stateText = try state.serialized()
         let stateIDs = tokenizer.encode(
-            text.replacingOccurrences(of: tokenizer.maskToken, with: " ")
+            stateText.replacingOccurrences(of: tokenizer.maskToken, with: " ")
         )
         let room = max(0, Self.sequenceLength - ids.count - 1)
-        let keptState = Array(stateIDs.prefix(room))
+        let keptState = state.truncatesFromLeft
+            ? Array(stateIDs.suffix(room))
+            : Array(stateIDs.prefix(room))
         ids.append(contentsOf: keptState)
         ids.append(tokenizer.sepTokenID)
         ids = Array(ids.prefix(Self.sequenceLength))

@@ -1,5 +1,100 @@
 import Foundation
 
+public struct LayaStateField: Equatable, Sendable {
+    public let key: String
+    public let value: LayaJSONValue
+
+    public init(_ key: String, _ value: LayaJSONValue) {
+        self.key = key
+        self.value = value
+    }
+}
+
+public indirect enum LayaJSONValue: Equatable, Sendable {
+    case string(String)
+    case integer(Int)
+    case number(Double)
+    case boolean(Bool)
+    case object([LayaStateField])
+    case array([LayaJSONValue])
+    case null
+}
+
+public enum LayaState: Equatable, Sendable {
+    case text(String)
+    case object([LayaStateField])
+    case conversation([LayaJSONValue])
+
+    public func serialized() throws -> String {
+        switch self {
+        case .text(let value):
+            value
+        case .object(let fields):
+            try LayaJSONValue.object(fields).serialized()
+        case .conversation(let turns):
+            try LayaJSONValue.array(turns).serialized()
+        }
+    }
+
+    var truncatesFromLeft: Bool {
+        if case .conversation = self { return true }
+        return false
+    }
+}
+
+private extension LayaJSONValue {
+    func serialized() throws -> String {
+        switch self {
+        case .string(let value):
+            return Self.quote(value)
+        case .integer(let value):
+            return String(value)
+        case .number(let value):
+            guard value.isFinite else {
+                throw LayaError.unsupportedState("JSON numbers must be finite")
+            }
+            return String(value)
+        case .boolean(let value):
+            return value ? "true" : "false"
+        case .object(let fields):
+            var seen: Set<String> = []
+            let members = try fields.map { field in
+                guard seen.insert(field.key).inserted else {
+                    throw LayaError.unsupportedState(
+                        "JSON objects must not contain duplicate key '\(field.key)'"
+                    )
+                }
+                return "\(Self.quote(field.key)): \(try field.value.serialized())"
+            }
+            return "{\(members.joined(separator: ", "))}"
+        case .array(let values):
+            return "[\(try values.map { try $0.serialized() }.joined(separator: ", "))]"
+        case .null:
+            return "null"
+        }
+    }
+
+    static func quote(_ value: String) -> String {
+        var result = "\""
+        for scalar in value.unicodeScalars {
+            switch scalar.value {
+            case 0x08: result += "\\b"
+            case 0x09: result += "\\t"
+            case 0x0A: result += "\\n"
+            case 0x0C: result += "\\f"
+            case 0x0D: result += "\\r"
+            case 0x22: result += "\\\""
+            case 0x5C: result += "\\\\"
+            case 0x00...0x1F:
+                result += String(format: "\\u%04x", scalar.value)
+            default:
+                result.unicodeScalars.append(scalar)
+            }
+        }
+        return result + "\""
+    }
+}
+
 public struct ChoiceOption: Equatable, Sendable {
     public let label: String
     public let criterion: String?
