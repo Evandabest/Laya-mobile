@@ -56,6 +56,13 @@ private final class DemoModel: ObservableObject {
             return
         }
         let bundle = resources.appending(path: "LayaModel/Generated", directoryHint: .isDirectory)
+        guard Self.hasGeneratedModelBundle(at: bundle) else {
+            status = "Model resources are not installed"
+            detail = "From the repository root, run: "
+                + ".venv-coreml/bin/python -m conversion.export_coreml "
+                + "--output ios/ExampleApp/Resources/LayaModel/Generated, then rebuild the app."
+            return
+        }
         do {
             laya = try await LayaModel.load(from: bundle)
             status = "Ready — fully offline"
@@ -64,6 +71,23 @@ private final class DemoModel: ObservableObject {
         } catch {
             status = "Model is not installed"
             detail = error.localizedDescription
+        }
+    }
+
+    private static func hasGeneratedModelBundle(at bundle: URL) -> Bool {
+        let files = FileManager.default
+        let requiredFiles = [
+            "tokenizer/tokenizer.json",
+            "tokenizer/tokenizer_config.json",
+            "rl_agent_config.json",
+        ]
+        guard requiredFiles.allSatisfy({
+            files.fileExists(atPath: bundle.appending(path: $0).path)
+        }) else {
+            return false
+        }
+        return ["laya.mlpackage", "laya.mlmodelc"].contains {
+            files.fileExists(atPath: bundle.appending(path: $0).path)
         }
     }
 
