@@ -56,9 +56,9 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 ## 7. Prototype completion gate
 
-- [ ] Load a real pinned Laya checkpoint with no Python runtime.
-- [ ] Match tokenizer inputs exactly.
-- [ ] Match every fixture decision with acceptable confidence drift.
+- [x] Load a real pinned Laya checkpoint with no Python runtime.
+- [x] Match tokenizer inputs exactly.
+- [x] Match every fixture decision with acceptable confidence drift.
 - [ ] Demonstrate all primary typed decisions in the iOS app.
-- [ ] Confirm no server or inference-time network dependency.
-- [ ] Document remaining limitations and the Android follow-up plan.
+- [x] Confirm no server or inference-time network dependency.
+- [x] Document remaining limitations and the Android follow-up plan.

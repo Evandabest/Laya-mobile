@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile": "laya-ios-english-v1",
+  "measured_at": "2026-10-03",
+  "environment": {
+    "architecture": "arm64",
+    "operating_system": "macOS 26.3.1",
+    "configuration": "Swift release",
+    "device_scope": "preliminary development-Mac measurement; not an iPhone result"
+  },
+  "request": {
+    "questions": 1,
+    "warm_iterations": 10,
+    "text": "I was charged twice. Please refund the duplicate payment."
+  },
+  "result": {
+    "backend": "Core ML FP16",
+    "model_bundle_bytes": 848196843,
+    "load_ms": 11145.013999999999,
+    "first_inference_ms": 228.54820799999999,
+    "warm_average_ms": 84.568021000000002,
+    "warm_min_ms": 80.091708999999994,
+    "warm_max_ms": 93.404499999999999,
+    "peak_resident_bytes": 1982251008
+  },
+  "notes": [
+    "Load time includes compiling the source .mlpackage. An Xcode-built app normally packages a compiled .mlmodelc.",
+    "Peak RSS is process-wide high-water memory and includes the tokenizer, Core ML runtime, model weights, and intermediate allocations.",
+    "These measurements must not be substituted for the pending iPhone 17 Pro device report."
+  ]
+}

@@ -1,4 +1,40 @@
-# Laya-MLX
+# Laya Mobile
+
+Native, fully offline Laya typed-decision inference for iOS. The first prototype preserves the
+pinned English Laya checkpoint and its choice, score, boolean/noul, calibration, prompt, and
+tokenizer behavior while replacing the desktop inference backend with Core ML.
+
+The current iOS milestone includes:
+
+- a reproducible PyTorch-to-Core-ML FP16 exporter;
+- 44 real-checkpoint parity fixtures with 100% decision agreement;
+- an offline `LayaMobile` Swift package with local Hugging Face tokenization;
+- typed Swift choice, score, and boolean APIs;
+- a SwiftUI example app and a native benchmark CLI.
+
+Core ML's maximum calibrated probability difference was `0.01051`, inside the fixed `0.02`
+tolerance. The generated bundle is about 848 MB. Preliminary Apple-silicon macOS numbers are
+recorded under `benchmarks/results`; iPhone 17 Pro latency, memory, and compute-unit placement still
+require the physical-device pass.
+
+Start with [the mobile architecture](docs/mobile/ARCHITECTURE.md),
+[implementation ledger](docs/mobile/IMPLEMENTATION_PLAN.md), or
+[iOS example](ios/ExampleApp/README.md).
+
+```bash
+# Export the local model bundle after installing the conversion environment.
+.venv-coreml/bin/python -m conversion.export_coreml \
+  --output ios/ExampleApp/Resources/LayaModel/Generated
+
+# Verify the native Swift runtime and all available local parity assets.
+cd ios/LayaMobile
+swift test
+```
+
+## Reference MLX implementation
+
+The repository retains the MLX implementation used as a behavioral and architectural reference
+for the mobile port.
 
 ![Laya MLX playing Snake — actual decisions, original speed](https://raw.githubusercontent.com/mizorewww/laya-mlx/main/docs/assets/snake-demo.gif)
 
