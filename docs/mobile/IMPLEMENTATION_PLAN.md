@@ -29,8 +29,8 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 ## 4. Native Swift runtime
 
-- [ ] Create the `LayaMobile` Swift package.
-- [ ] Add strongly typed choice, score, boolean/noul, result, usage, and error types.
+- [x] Create the `LayaMobile` Swift package.
+- [x] Add strongly typed choice, score, boolean/noul, result, usage, and error types.
 - [ ] Port validation, serialization, rendering, truncation, and tensor construction.
 - [ ] Load the tokenizer entirely from bundled local assets.
 - [ ] Prove exact tokenizer parity, including Unicode and adversarial whitespace.
