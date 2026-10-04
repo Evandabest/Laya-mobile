@@ -1,35 +1,25 @@
 import torch
 
-from conversion.model_wrapper import MobileLayaModel, example_inputs
+from conversion.model_wrapper import StaticDecisionLayer, example_inputs
 
 
-class RecordingModel(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.seen = None
-
-    def forward(self, input_ids, attention_mask, marker_pos, marker_mask, qtype):
-        self.seen = tuple(
-            value.dtype for value in (input_ids, attention_mask, marker_pos, marker_mask, qtype)
-        )
-        return marker_pos.float(), torch.stack([qtype.float(), qtype.float()], dim=-1)
-
-
-def test_mobile_wrapper_exposes_int32_and_casts_for_pytorch():
-    model = RecordingModel()
-    wrapper = MobileLayaModel(model)
-    inputs = example_inputs(sequence_length=32, marker_slots=8)
-    logits, action_logits = wrapper(*inputs)
-    assert all(value.dtype == torch.int32 for value in inputs)
-    assert model.seen == (
-        torch.int64,
-        torch.int64,
-        torch.int64,
-        torch.bool,
-        torch.int64,
-    )
-    assert logits.shape == (1, 8)
-    assert action_logits.shape == (1, 2)
+def test_static_decision_layer_matches_pytorch_encoder_layer():
+    torch.manual_seed(7)
+    reference = torch.nn.TransformerEncoderLayer(
+        d_model=16,
+        nhead=4,
+        dim_feedforward=64,
+        dropout=0.0,
+        batch_first=True,
+        norm_first=True,
+    ).eval()
+    converted = StaticDecisionLayer(reference, sequence_length=12).eval()
+    hidden = torch.randn(1, 12, 16)
+    padding = torch.tensor([[False] * 9 + [True] * 3])
+    with torch.inference_mode():
+        expected = reference(hidden, src_key_padding_mask=padding)
+        actual = converted(hidden, src_key_padding_mask=padding)
+    torch.testing.assert_close(actual, expected, atol=2e-6, rtol=1e-5)
 
 
 def test_mobile_example_inputs_are_deterministic_and_static():

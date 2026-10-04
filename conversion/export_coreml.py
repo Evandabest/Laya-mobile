@@ -44,6 +44,11 @@ def export(checkpoint, upstream, output, *, target="iOS18"):
         )
 
     agent = load_upstream_agent(upstream, checkpoint, "cpu")
+    # Core ML Tools 9 cannot lower the shape-to-integer helpers emitted by the SDPA integration
+    # for this ModernBERT graph. Eager attention is mathematically the same QK^T/softmax/V
+    # operation with the same masks and rotary embeddings, but lowers to ordinary matmul and
+    # softmax operations. The pinned reference and parity fixtures remain SDPA-based.
+    agent.model.encoder.config._attn_implementation = "eager"
     wrapped = MobileLayaModel(agent.model).eval()
     inputs = example_inputs(sequence_length=SEQUENCE_LENGTH, marker_slots=MARKER_SLOTS)
     with torch.inference_mode():
