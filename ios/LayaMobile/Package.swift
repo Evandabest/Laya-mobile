@@ -11,8 +11,16 @@ let package = Package(
     products: [
         .library(name: "LayaMobile", targets: ["LayaMobile"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/huggingface/swift-transformers", from: "1.3.0"),
+    ],
     targets: [
-        .target(name: "LayaMobile"),
+        .target(
+            name: "LayaMobile",
+            dependencies: [
+                .product(name: "Tokenizers", package: "swift-transformers"),
+            ]
+        ),
         .testTarget(name: "LayaMobileTests", dependencies: ["LayaMobile"]),
     ]
 )

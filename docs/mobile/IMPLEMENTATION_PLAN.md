@@ -32,8 +32,8 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [x] Create the `LayaMobile` Swift package.
 - [x] Add strongly typed choice, score, boolean/noul, result, usage, and error types.
 - [ ] Port validation, serialization, rendering, truncation, and tensor construction.
-- [ ] Load the tokenizer entirely from bundled local assets.
-- [ ] Prove exact tokenizer parity, including Unicode and adversarial whitespace.
+- [x] Load the tokenizer entirely from bundled local assets.
+- [x] Prove exact tokenizer parity, including Unicode and adversarial whitespace.
 - [ ] Load and invoke the compiled Core ML model.
 - [ ] Port calibration, decoding, confidence, and output formatting.
 - [ ] Support multiple questions sequentially behind one `predict` call.
