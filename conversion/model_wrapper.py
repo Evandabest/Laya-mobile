@@ -31,8 +31,10 @@ class StaticDecisionLayer(torch.nn.Module):
         value = value.transpose(1, 2)
         scores = torch.matmul(query, key.transpose(2, 3)) * (self.head_dim**-0.5)
         if src_key_padding_mask is not None:
-            blocked = torch.finfo(scores.dtype).min
-            scores = scores + src_key_padding_mask[:, None, None, :].to(scores.dtype) * blocked
+            blocked = torch.full((), torch.finfo(scores.dtype).min, dtype=scores.dtype)
+            zero = torch.zeros((), dtype=scores.dtype)
+            additive_mask = torch.where(src_key_padding_mask[:, None, None, :], blocked, zero)
+            scores = scores + additive_mask
         probs = torch.softmax(scores, dim=-1)
         attended = torch.matmul(probs, value).transpose(1, 2).reshape(1, self.sequence_length, -1)
         x = hidden_states + self.out_proj(attended)

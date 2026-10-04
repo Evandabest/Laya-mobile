@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "profile": "laya-ios-english-v1",
+  "validated_at": "2026-10-03",
+  "backend": {
+    "runtime": "Core ML",
+    "format": "ML Program",
+    "compute_precision": "float16",
+    "minimum_deployment_target": "iOS18"
+  },
+  "fixture": "parity_tests/fixtures/laya-ios-english-v1.json",
+  "result": {
+    "rows": 44,
+    "decision_agreement": 1.0,
+    "max_probability_error": 0.010504148842739092,
+    "max_action_probability_error": 0.0,
+    "max_logit_error": 0.8886394500732422,
+    "max_action_logit_error": 31.0458984375,
+    "probability_tolerance": 0.02
+  },
+  "notes": [
+    "All typed decisions matched the reference fixture.",
+    "The checkpoint's action logits are very large in magnitude; FP16 absolute drift did not change their softmax probability."
+  ]
+}

@@ -1,6 +1,7 @@
 import torch
 
 from conversion.model_wrapper import StaticDecisionLayer, example_inputs
+from conversion.validate_coreml import compare_row
 
 
 def test_static_decision_layer_matches_pytorch_encoder_layer():
@@ -33,3 +34,21 @@ def test_mobile_example_inputs_are_deterministic_and_static():
         (1, 48),
         (1,),
     ]
+
+
+def test_coreml_comparison_uses_calibrated_probabilities():
+    row = {
+        "question_id": "route",
+        "option_count": 3,
+        "logits": [4.0, 2.0, 1.0, -10000.0],
+        "action_logits": [10.0, -10.0],
+        "probabilities": [0.8437947344813395, 0.11419519938459449, 0.04201006613406605],
+    }
+    result = compare_row(
+        row,
+        logits=[4.001, 2.0, 1.0, -10000.0],
+        action_logits=[10.001, -10.0],
+        probability_tolerance=0.02,
+    )
+    assert result["decision_match"]
+    assert result["max_probability_error"] < 0.001
