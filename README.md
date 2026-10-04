@@ -21,6 +21,26 @@ Start with [the mobile architecture](docs/mobile/ARCHITECTURE.md),
 [implementation ledger](docs/mobile/IMPLEMENTATION_PLAN.md), or
 [iOS example](ios/ExampleApp/README.md).
 
+## iPhone 17 Pro demo
+
+These recordings show the generated Core ML model running fully offline on a physical iPhone 17
+Pro. The first preview walks through the example inputs and output modes; the second shows local
+inference across the scenarios, including structured JSON, conversations, Unicode, scores, choices,
+booleans, and multi-question calls.
+
+<p align="center">
+  <img src="docs/assets/laya-iphone-17-pro-scenarios.gif" alt="Laya Mobile scenario walkthrough on iPhone 17 Pro" width="360">
+  <img src="docs/assets/laya-iphone-17-pro-inference.gif" alt="Laya Mobile on-device inference on iPhone 17 Pro" width="360">
+</p>
+
+Full recordings: [scenario walkthrough (36 seconds)](docs/assets/laya-iphone-17-pro-scenarios.mp4) ·
+[inference run (64 seconds)](docs/assets/laya-iphone-17-pro-inference.mp4).
+
+The recordings show per-question latencies in roughly the 116–203 ms range on this phone, with a
+three-question request completing in under 400 ms. These are demonstration measurements, not yet a
+controlled benchmark; see the [benchmark plan](docs/mobile/IMPLEMENTATION_PLAN.md) for the formal
+device-validation pass.
+
 ```bash
 # Export the local model bundle after installing the conversion environment.
 .venv-coreml/bin/python -m conversion.export_coreml \
