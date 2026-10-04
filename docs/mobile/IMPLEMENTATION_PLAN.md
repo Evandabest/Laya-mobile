@@ -34,9 +34,9 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [ ] Port validation, serialization, rendering, truncation, and tensor construction.
 - [x] Load the tokenizer entirely from bundled local assets.
 - [x] Prove exact tokenizer parity, including Unicode and adversarial whitespace.
-- [ ] Load and invoke the compiled Core ML model.
-- [ ] Port calibration, decoding, confidence, and output formatting.
-- [ ] Support multiple questions sequentially behind one `predict` call.
+- [x] Load and invoke the compiled Core ML model.
+- [x] Port calibration, decoding, confidence, and output formatting.
+- [x] Support multiple questions sequentially behind one `predict` call.
 - [ ] Pass fixture-driven XCTest parity tests.
 
 ## 5. Example application
