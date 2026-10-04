@@ -60,16 +60,18 @@ public final class LayaModel: @unchecked Sendable {
         var stateTokens = 0
         var dropped = 0
         for question in questions {
+            let questionStarted = clock.now
             let prepared = try preprocessor.prepare(state: state, question: question)
             let outputs = try prediction(prepared)
+            let decoded = try LayaDecoder.decode(
+                question: question,
+                prepared: prepared,
+                logits: outputs.logits,
+                actionLogits: outputs.actionLogits,
+                calibration: calibration
+            )
             results.append(
-                try LayaDecoder.decode(
-                    question: question,
-                    prepared: prepared,
-                    logits: outputs.logits,
-                    actionLogits: outputs.actionLogits,
-                    calibration: calibration
-                )
+                decoded.recording(latency: questionStarted.duration(to: clock.now))
             )
             inputTokens += prepared.attentionMask.reduce(0) { $0 + Int($1) }
             stateTokens = max(stateTokens, prepared.stateTokens)

@@ -248,10 +248,18 @@ private final class DemoModel: ObservableObject {
         guard let laya else { return }
         isRunning = true
         prediction = nil
+        status = "Running locally…"
+        let count = questionSet.questions.count
+        detail = count == 1
+            ? "Processing 1 question on Core ML."
+            : "Processing \(count) questions sequentially on Core ML."
         defer { isRunning = false }
         do {
             let questions = questionSet.questions
-            let result = try laya.predict(state: state, questions: questions)
+            let state = state
+            let result = try await Task.detached(priority: .userInitiated) {
+                try laya.predict(state: state, questions: questions)
+            }.value
             lastQuestions = questions
             prediction = result
             status = result.results.count == 1
@@ -389,6 +397,21 @@ struct ContentView: View {
             }
             .disabled(!model.isReady || model.isRunning)
 
+            if model.isRunning {
+                HStack(spacing: 12) {
+                    ProgressView()
+                        .controlSize(.large)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Inference in progress")
+                            .fontWeight(.semibold)
+                        Text("The simulator can take several seconds per question.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 6)
+            }
+
             Text(model.status)
                 .font(.headline)
             if !model.detail.isEmpty {
@@ -412,7 +435,10 @@ struct ContentView: View {
 
             Section("Inference details") {
                 LabeledContent("Backend", value: prediction.backend)
-                LabeledContent("Latency", value: prediction.latency.formattedMilliseconds)
+                LabeledContent(
+                    "Total request latency",
+                    value: prediction.latency.formattedMilliseconds
+                )
                 LabeledContent("Input tokens", value: String(prediction.usage.inputTokens))
                 LabeledContent("State tokens", value: String(prediction.usage.stateTokens))
                 LabeledContent(
@@ -485,6 +511,11 @@ private struct ResultCard: View {
             }
 
             Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 5) {
+                GridRow {
+                    Text("Question latency").foregroundStyle(.secondary)
+                    Text(result.latency.formattedMilliseconds)
+                        .monospacedDigit()
+                }
                 metricRow("Confidence", result.confidence)
                 metricRow("Answer confidence", result.answerConfidence)
                 metricRow("Act probability", result.actProbability)

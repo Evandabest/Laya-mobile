@@ -181,6 +181,7 @@ public struct DecisionResult: Equatable, Sendable {
     public let answerConfidence: Double
     public let probabilities: [String: Double]
     public let actProbability: Double
+    public let latency: Duration
 
     public init(
         questionName: String,
@@ -188,7 +189,8 @@ public struct DecisionResult: Equatable, Sendable {
         confidence: Double,
         answerConfidence: Double,
         probabilities: [String: Double],
-        actProbability: Double
+        actProbability: Double,
+        latency: Duration = .zero
     ) {
         self.questionName = questionName
         self.value = value
@@ -196,6 +198,19 @@ public struct DecisionResult: Equatable, Sendable {
         self.answerConfidence = answerConfidence
         self.probabilities = probabilities
         self.actProbability = actProbability
+        self.latency = latency
+    }
+
+    func recording(latency: Duration) -> DecisionResult {
+        DecisionResult(
+            questionName: questionName,
+            value: value,
+            confidence: confidence,
+            answerConfidence: answerConfidence,
+            probabilities: probabilities,
+            actProbability: actProbability,
+            latency: latency
+        )
     }
 }
 

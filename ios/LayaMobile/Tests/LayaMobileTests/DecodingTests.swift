@@ -31,6 +31,7 @@ private func prepared(labels: [String], type: Int32) -> PreparedQuestion {
         calibration: calibration
     )
     #expect(choiceResult.value == .choice("billing"))
+    #expect(choiceResult.latency == .zero)
 
     let score = LayaQuestion.score(
         .init(name: "urgency", instructions: "Rate", levels: ["low", "medium", "high"])

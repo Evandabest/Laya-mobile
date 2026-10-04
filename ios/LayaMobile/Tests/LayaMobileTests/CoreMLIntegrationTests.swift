@@ -37,6 +37,11 @@ private func modelBundleURL() -> URL? {
     )
     let prediction = try model.predict(text: "", questions: [department, urgency, refund])
     #expect(prediction.results.count == 3)
+    #expect(prediction.results.allSatisfy { $0.latency > .zero })
+    #expect(
+        prediction.results.reduce(Duration.zero) { $0 + $1.latency }
+            <= prediction.latency
+    )
     #expect(prediction.results[0].value == .choice("billing"))
     #expect(abs((prediction.results[0].probabilities["billing"] ?? 0) - 0.4002) <= 0.02)
     guard case .score(let score) = prediction.results[1].value else {

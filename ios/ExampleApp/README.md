@@ -10,5 +10,7 @@ Unicode, empty input, and truncation. It exercises choice, score, boolean/noul, 
 labels, and multiple questions in one request through the local `LayaMobile` Swift package.
 
 Each result shows the selected value, the complete option distribution, confidence,
-answer-confidence, action probability, inference latency, token usage, truncation, and the active
-Core ML backend. No inference-time network request is made.
+answer-confidence, action probability, and its individual latency. The summary reports total
+request latency, token usage, truncation, and the active Core ML backend. Inference runs away from
+the UI actor so progress remains visible during multi-question requests. No inference-time network
+request is made.
