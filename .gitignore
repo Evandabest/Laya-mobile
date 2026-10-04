@@ -1,6 +1,7 @@
 .venv/
 .venv-*/
 .build/
+ios/ExampleApp/Resources/LayaModel/Generated/
 .upstream/
 .cache/
 models/

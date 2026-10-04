@@ -1,0 +1,355 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		08E82B1C672025C9E2B940F5 /* LayaMobile in Frameworks */ = {isa = PBXBuildFile; productRef = C348F79F8E009012526ECE61 /* LayaMobile */; };
+		32B9D904848578C3C3C5BA2F /* LayaExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE22753E8E2E24C5E045330 /* LayaExampleApp.swift */; };
+		C805D3230AF3C8F355B0FAC9 /* LayaModel in Resources */ = {isa = PBXBuildFile; fileRef = 967FE057EA5F5F79FD9D0206 /* LayaModel */; };
+		E6CF1D92A6A194D22B572B3D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D4770D951C44F3BA0249D0 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A6B7CD0B467475FF56C5468 /* LayaMobile */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LayaMobile; path = ../LayaMobile; sourceTree = SOURCE_ROOT; };
+		6C6B0D119A751B22609D2137 /* LayaExample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LayaExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DE22753E8E2E24C5E045330 /* LayaExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayaExampleApp.swift; sourceTree = "<group>"; };
+		967FE057EA5F5F79FD9D0206 /* LayaModel */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LayaModel; path = Resources/LayaModel; sourceTree = SOURCE_ROOT; };
+		F0D4770D951C44F3BA0249D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		704ACA861B86A271BC6D9BB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08E82B1C672025C9E2B940F5 /* LayaMobile in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3734FB81626091AF24CF9C7F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6C6B0D119A751B22609D2137 /* LayaExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6C23564F67FA25775DED07DD /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F0D4770D951C44F3BA0249D0 /* ContentView.swift */,
+				6DE22753E8E2E24C5E045330 /* LayaExampleApp.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		83A4E14960AEC1F498A47B4F /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				1A6B7CD0B467475FF56C5468 /* LayaMobile */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		93FF80ABC62D03A8636D24EF = {
+			isa = PBXGroup;
+			children = (
+				967FE057EA5F5F79FD9D0206 /* LayaModel */,
+				83A4E14960AEC1F498A47B4F /* Packages */,
+				6C23564F67FA25775DED07DD /* Sources */,
+				3734FB81626091AF24CF9C7F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AAC98ABCF988B903B0BB0E27 /* LayaExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 31E3E132C828F80EFB8A81E8 /* Build configuration list for PBXNativeTarget "LayaExample" */;
+			buildPhases = (
+				7A8859E24AA6F9978316F35B /* Sources */,
+				3E1AC00A0BB2A72B3E1C40D1 /* Resources */,
+				704ACA861B86A271BC6D9BB4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LayaExample;
+			packageProductDependencies = (
+				C348F79F8E009012526ECE61 /* LayaMobile */,
+			);
+			productName = LayaExample;
+			productReference = 6C6B0D119A751B22609D2137 /* LayaExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DA96F1B0FA0F5EC099E0ADAA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					AAC98ABCF988B903B0BB0E27 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 69175F22CD94DCC49B2F146D /* Build configuration list for PBXProject "LayaExample" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 93FF80ABC62D03A8636D24EF;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E5CEBDD7FE199379AC44863D /* XCLocalSwiftPackageReference "../LayaMobile" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3734FB81626091AF24CF9C7F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AAC98ABCF988B903B0BB0E27 /* LayaExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3E1AC00A0BB2A72B3E1C40D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C805D3230AF3C8F355B0FAC9 /* LayaModel in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7A8859E24AA6F9978316F35B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E6CF1D92A6A194D22B572B3D /* ContentView.swift in Sources */,
+				32B9D904848578C3C3C5BA2F /* LayaExampleApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		41ACE7011ABDFCA8D016C09A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Laya;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.evandabest.LayaExample;
+				PRODUCT_NAME = Laya;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5D389E17C9F035D1A4DD382C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9BD33CA5169216996EC807F9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Laya;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.evandabest.LayaExample;
+				PRODUCT_NAME = Laya;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F0C16225AFA59DAC2A2315D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		31E3E132C828F80EFB8A81E8 /* Build configuration list for PBXNativeTarget "LayaExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				41ACE7011ABDFCA8D016C09A /* Debug */,
+				9BD33CA5169216996EC807F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		69175F22CD94DCC49B2F146D /* Build configuration list for PBXProject "LayaExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D389E17C9F035D1A4DD382C /* Debug */,
+				F0C16225AFA59DAC2A2315D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E5CEBDD7FE199379AC44863D /* XCLocalSwiftPackageReference "../LayaMobile" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../LayaMobile;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C348F79F8E009012526ECE61 /* LayaMobile */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LayaMobile;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = DA96F1B0FA0F5EC099E0ADAA /* Project object */;
+}

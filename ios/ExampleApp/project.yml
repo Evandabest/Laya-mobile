@@ -1,0 +1,35 @@
+name: LayaExample
+options:
+  bundleIdPrefix: com.evandabest
+  deploymentTarget:
+    iOS: "18.0"
+packages:
+  LayaMobile:
+    path: ../LayaMobile
+targets:
+  LayaExample:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+      - path: Resources/LayaModel
+        type: folder
+    dependencies:
+      - package: LayaMobile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.evandabest.LayaExample
+        PRODUCT_NAME: Laya
+        SWIFT_VERSION: 6.0
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Laya
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        CODE_SIGN_STYLE: Automatic
+schemes:
+  LayaExample:
+    build:
+      targets:
+        LayaExample: all
+    run:
+      config: Debug

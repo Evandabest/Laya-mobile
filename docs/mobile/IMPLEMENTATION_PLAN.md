@@ -24,7 +24,7 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 - [x] Add a conversion-time PyTorch wrapper with five inputs and two outputs.
 - [x] Export the pinned English checkpoint directly to an FP16 Core ML ML Program.
 - [x] Validate Core ML numerics and decisions against fixtures on macOS.
-- [ ] Record unsupported or CPU-fallback operations and the minimum deployment target.
+- [x] Record unsupported or CPU-fallback operations and the minimum deployment target.
 - [ ] Add an ONNX export and validator as the later Android source artifact.
 
 ## 4. Native Swift runtime
@@ -41,10 +41,10 @@ model packages are stored under ignored `models/` and `artifacts/` directories.
 
 ## 5. Example application
 
-- [ ] Create a minimal iOS application using the package.
-- [ ] Support user text and sample choice, score, and boolean questions.
-- [ ] Display decision, probability/confidence values, latency, truncation, and backend.
-- [ ] Make offline execution evident and testable.
+- [x] Create a minimal iOS application using the package.
+- [x] Support user text and sample choice, score, and boolean questions.
+- [x] Display decision, probability/confidence values, latency, truncation, and backend.
+- [x] Make offline execution evident and testable.
 
 ## 6. Physical-device validation
 
