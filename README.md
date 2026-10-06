@@ -44,7 +44,8 @@ device-validation pass.
 ```bash
 # Export the local model bundle after installing the conversion environment.
 .venv-coreml/bin/python -m conversion.export_coreml \
-  --output ios/ExampleApp/Resources/LayaModel/Generated
+  --output ios/ExampleApp/Resources/LayaModel/Generated \
+  --compile-model
 
 # Verify the native Swift runtime and all available local parity assets.
 cd ios/LayaMobile

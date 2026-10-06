@@ -4,8 +4,11 @@ Generate the ignored `Generated/` directory before running the example app:
 
 ```bash
 .venv-coreml/bin/python -m conversion.export_coreml \
-  --output ios/ExampleApp/Resources/LayaModel/Generated
+  --output ios/ExampleApp/Resources/LayaModel/Generated \
+  --compile-model
 ```
 
-Xcode packages that directory as an app resource. It contains the Core ML model, tokenizer, and
-calibration configuration; the application performs no model or tokenizer downloads at runtime.
+The compile flag replaces the source `.mlpackage` with an `.mlmodelc` produced by Xcode's Core ML
+compiler. Xcode packages that directory as an app resource, so launch never recompiles the model.
+The directory also contains the tokenizer and calibration configuration; the application performs
+no model or tokenizer downloads at runtime.

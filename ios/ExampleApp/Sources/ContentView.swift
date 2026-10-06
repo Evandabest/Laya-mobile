@@ -298,9 +298,7 @@ private final class DemoModel: ObservableObject {
         }) else {
             return false
         }
-        return ["laya.mlpackage", "laya.mlmodelc"].contains {
-            files.fileExists(atPath: bundle.appending(path: $0).path)
-        }
+        return files.fileExists(atPath: bundle.appending(path: "laya.mlmodelc").path)
     }
 }
 

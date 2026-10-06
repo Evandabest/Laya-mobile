@@ -1,5 +1,9 @@
+import subprocess
+
+import pytest
 import torch
 
+from conversion.export_coreml import compile_model_package
 from conversion.model_wrapper import StaticDecisionLayer, example_inputs
 from conversion.validate_coreml import compare_row
 
@@ -52,3 +56,38 @@ def test_coreml_comparison_uses_calibrated_probabilities():
     )
     assert result["decision_match"]
     assert result["max_probability_error"] < 0.001
+
+
+def test_compile_model_package_replaces_source_package(tmp_path, monkeypatch):
+    package = tmp_path / "laya.mlpackage"
+    package.mkdir()
+
+    def fake_run(command, check):
+        assert command[1:3] == ["coremlcompiler", "compile"]
+        assert check
+        (tmp_path / "laya.mlmodelc").mkdir()
+
+    monkeypatch.setattr("conversion.export_coreml.shutil.which", lambda _: "/usr/bin/xcrun")
+    monkeypatch.setattr("conversion.export_coreml.subprocess.run", fake_run)
+
+    compiled = compile_model_package(package, tmp_path)
+
+    assert compiled == tmp_path / "laya.mlmodelc"
+    assert compiled.is_dir()
+    assert not package.exists()
+
+
+def test_compile_model_package_preserves_source_when_compilation_fails(tmp_path, monkeypatch):
+    package = tmp_path / "laya.mlpackage"
+    package.mkdir()
+
+    def fake_run(command, check):
+        raise subprocess.CalledProcessError(1, command)
+
+    monkeypatch.setattr("conversion.export_coreml.shutil.which", lambda _: "/usr/bin/xcrun")
+    monkeypatch.setattr("conversion.export_coreml.subprocess.run", fake_run)
+
+    with pytest.raises(subprocess.CalledProcessError):
+        compile_model_package(package, tmp_path)
+
+    assert package.is_dir()

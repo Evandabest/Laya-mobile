@@ -4,6 +4,7 @@ import argparse
 import json
 import platform
 import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,7 +26,24 @@ from .common import (
 from .model_wrapper import MobileLayaModel, example_inputs
 
 
-def export(checkpoint, upstream, output, *, target="iOS18"):
+def compile_model_package(model_path, output):
+    """Compile an mlpackage once so applications can bundle the resulting mlmodelc."""
+    compiler = shutil.which("xcrun")
+    if compiler is None:
+        raise RuntimeError("Compiling Core ML models requires Xcode's xcrun command")
+
+    subprocess.run(
+        [compiler, "coremlcompiler", "compile", str(model_path), str(output)],
+        check=True,
+    )
+    compiled_path = output / f"{model_path.stem}.mlmodelc"
+    if not compiled_path.is_dir():
+        raise RuntimeError(f"Core ML compiler did not create {compiled_path}")
+    shutil.rmtree(model_path)
+    return compiled_path
+
+
+def export(checkpoint, upstream, output, *, target="iOS18", compile_model=False):
     try:
         import coremltools as ct
     except ImportError as error:
@@ -92,6 +110,8 @@ def export(checkpoint, upstream, output, *, target="iOS18"):
     try:
         model_path = output / "laya.mlpackage"
         converted.save(str(model_path))
+        if compile_model:
+            model_path = compile_model_package(model_path, output)
         shutil.copytree(checkpoint / "tokenizer", output / "tokenizer")
         shutil.copy2(checkpoint / "rl_agent_config.json", output / "rl_agent_config.json")
         (output / "encoder").mkdir()
@@ -111,6 +131,7 @@ def export(checkpoint, upstream, output, *, target="iOS18"):
                 "coremltools": ct.__version__,
                 "deployment_target": target,
                 "compute_precision": "float16",
+                "packaging": model_path.suffix.removeprefix("."),
             },
             "model_io": {
                 "batch_size": 1,
@@ -138,9 +159,20 @@ def main():
     parser.add_argument("--upstream", type=Path, default=Path(".upstream"))
     parser.add_argument("--output", type=Path, default=Path("artifacts/coreml/laya-ios-english-v1"))
     parser.add_argument("--target", default="iOS18")
+    parser.add_argument(
+        "--compile-model",
+        action="store_true",
+        help="replace the source mlpackage with a precompiled mlmodelc for app packaging",
+    )
     args = parser.parse_args()
     try:
-        result = export(args.checkpoint, args.upstream, args.output, target=args.target)
+        result = export(
+            args.checkpoint,
+            args.upstream,
+            args.output,
+            target=args.target,
+            compile_model=args.compile_model,
+        )
     except Exception as error:
         print(f"Core ML export failed: {error}", file=sys.stderr)
         raise
