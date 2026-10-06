@@ -67,6 +67,7 @@ private enum DemoQuestionSet: String, CaseIterable, Identifiable {
 }
 
 private enum SampleScenario: String, CaseIterable, Identifiable {
+    case custom = "Custom input"
     case refundText = "Refund request"
     case technicalObject = "Structured support ticket"
     case conversation = "Conversation history"
@@ -80,6 +81,7 @@ private enum SampleScenario: String, CaseIterable, Identifiable {
 
     var summary: String {
         switch self {
+        case .custom: "Type any text · choose any output mode"
         case .refundText: "Plain text · three questions in one call"
         case .technicalObject: "Ordered JSON object · choice output"
         case .conversation: "Chronological turn list · all output types"
@@ -93,7 +95,7 @@ private enum SampleScenario: String, CaseIterable, Identifiable {
 
     var questionSet: DemoQuestionSet {
         switch self {
-        case .refundText, .conversation, .longConversation, .empty: .all
+        case .custom, .refundText, .conversation, .longConversation, .empty: .all
         case .technicalObject, .unicode: .route
         case .criticalScore: .urgency
         case .customBoolean: .verified
@@ -102,6 +104,8 @@ private enum SampleScenario: String, CaseIterable, Identifiable {
 
     var state: LayaState {
         switch self {
+        case .custom:
+            .text("")
         case .refundText:
             .text("I was charged twice. Please refund the duplicate payment today.")
         case .technicalObject:
@@ -197,7 +201,8 @@ private final class DemoModel: ObservableObject {
             return value
         }
         set {
-            guard case .text = state else { return }
+            guard case .text(let current) = state, current != newValue else { return }
+            scenario = .custom
             state = .text(newValue)
             clearOutput()
         }
@@ -301,6 +306,7 @@ private final class DemoModel: ObservableObject {
 
 struct ContentView: View {
     @StateObject private var model = DemoModel()
+    @FocusState private var inputFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -314,6 +320,12 @@ struct ContentView: View {
             }
             .navigationTitle("Laya Mobile")
             .task { await model.load() }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { inputFocused = false }
+                }
+            }
         }
     }
 
@@ -345,12 +357,29 @@ struct ContentView: View {
         Section {
             LabeledContent("State type", value: model.stateKind)
             if model.isTextState {
-                TextEditor(text: Binding(
-                    get: { model.editableText },
-                    set: { model.editableText = $0 }
-                ))
-                .font(.body)
-                .frame(minHeight: 110)
+                ZStack(alignment: .topLeading) {
+                    if model.editableText.isEmpty {
+                        Text("Type or paste any text for Laya to evaluate…")
+                            .foregroundStyle(.tertiary)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 8)
+                            .allowsHitTesting(false)
+                    }
+                    TextEditor(text: Binding(
+                        get: { model.editableText },
+                        set: { model.editableText = $0 }
+                    ))
+                    .focused($inputFocused)
+                    .font(.body)
+                    .scrollContentBackground(.hidden)
+                }
+                .frame(minHeight: 130)
+
+                Button("Clear input", systemImage: "xmark.circle") {
+                    model.editableText = ""
+                    inputFocused = true
+                }
+                .disabled(model.editableText.isEmpty)
             } else {
                 Text(model.statePreview)
                     .font(.system(.caption, design: .monospaced))
