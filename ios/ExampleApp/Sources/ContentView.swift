@@ -1,5 +1,6 @@
 import LayaMobile
 import SwiftUI
+import UIKit
 
 private enum DemoQuestionSet: String, CaseIterable, Identifiable {
     case route = "Choice · Route"
@@ -174,14 +175,14 @@ private final class DemoModel: ObservableObject {
     @Published var scenario: SampleScenario = .refundText
     @Published var questionSet: DemoQuestionSet = .all
     @Published var state: LayaState = SampleScenario.refundText.state
-    @Published var status = "Loading local model…"
+    @Published var status = "Preparing local runtime…"
     @Published var detail = ""
     @Published var prediction: LayaPrediction?
     @Published var lastQuestions: [LayaQuestion] = []
     @Published var isReady = false
     @Published var isRunning = false
 
-    private var laya: LayaModel?
+    private var laya: LayaModelStore?
 
     var stateKind: String {
         switch state {
@@ -225,7 +226,7 @@ private final class DemoModel: ObservableObject {
         clearOutput()
     }
 
-    func load() async {
+    func prepare() async {
         guard let resources = Bundle.main.resourceURL else {
             status = "Model bundle unavailable"
             return
@@ -235,25 +236,22 @@ private final class DemoModel: ObservableObject {
             status = "Model resources are not installed"
             detail = "From the repository root, run: "
                 + ".venv-coreml/bin/python -m conversion.export_coreml "
-                + "--output ios/ExampleApp/Resources/LayaModel/Generated, then rebuild the app."
+                + "--output ios/ExampleApp/Resources/LayaModel/Generated "
+                + "--compile-model, then rebuild the app."
             return
         }
-        do {
-            laya = try await LayaModel.load(from: bundle)
-            status = "Ready — fully offline"
-            detail = LayaModel.backend
-            isReady = true
-        } catch {
-            status = "Model is not installed"
-            detail = error.localizedDescription
-        }
+        laya = LayaModelStore(bundleURL: bundle)
+        status = "Ready — fully offline"
+        detail = "The model loads on first use and unloads after 60 seconds idle."
+        isReady = true
     }
 
     func predict() async {
         guard let laya else { return }
         isRunning = true
         prediction = nil
-        status = "Running locally…"
+        let modelWasLoaded = await laya.isLoaded()
+        status = modelWasLoaded ? "Running locally…" : "Loading model locally…"
         let count = questionSet.questions.count
         detail = count == 1
             ? "Processing 1 question on Core ML."
@@ -262,9 +260,7 @@ private final class DemoModel: ObservableObject {
         do {
             let questions = questionSet.questions
             let state = state
-            let result = try await Task.detached(priority: .userInitiated) {
-                try laya.predict(state: state, questions: questions)
-            }.value
+            let result = try await laya.predict(state: state, questions: questions)
             lastQuestions = questions
             prediction = result
             status = result.results.count == 1
@@ -277,12 +273,20 @@ private final class DemoModel: ObservableObject {
         }
     }
 
+    func releaseModel(reason: String) async {
+        guard let laya else { return }
+        await laya.unload()
+        guard !isRunning else { return }
+        status = "Ready — model released"
+        detail = "Released \(reason); the next request will reload it locally."
+    }
+
     private func clearOutput() {
         prediction = nil
         lastQuestions = []
         if isReady {
             status = "Ready — fully offline"
-            detail = LayaModel.backend
+            detail = "The model loads on first use and unloads after 60 seconds idle."
         }
     }
 
@@ -305,6 +309,7 @@ private final class DemoModel: ObservableObject {
 struct ContentView: View {
     @StateObject private var model = DemoModel()
     @FocusState private var inputFocused: Bool
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -317,7 +322,18 @@ struct ContentView: View {
                 outputSection
             }
             .navigationTitle("Laya Mobile")
-            .task { await model.load() }
+            .task { await model.prepare() }
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: UIApplication.didReceiveMemoryWarningNotification
+                )
+            ) { _ in
+                Task { await model.releaseModel(reason: "after a memory warning") }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .background else { return }
+                Task { await model.releaseModel(reason: "while the app was in the background") }
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()

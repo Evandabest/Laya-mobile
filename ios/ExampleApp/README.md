@@ -17,3 +17,7 @@ answer-confidence, action probability, and its individual latency. The summary r
 request latency, token usage, truncation, and the active Core ML backend. Inference runs away from
 the UI actor so progress remains visible during multi-question requests. No inference-time network
 request is made.
+
+The model is loaded lazily on the first request, shared by subsequent requests, and released after
+60 seconds without inference. The app also releases its reference when iOS reports memory pressure
+or the scene enters the background; the next request transparently reloads the compiled model.
